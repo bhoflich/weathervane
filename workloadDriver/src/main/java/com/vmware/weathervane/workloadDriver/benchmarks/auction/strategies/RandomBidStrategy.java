@@ -62,16 +62,23 @@ public class RandomBidStrategy implements BidStrategy {
 		if (increasePct > bidAmountIncreaseMax) increasePct = bidAmountIncreaseMax;
 		if (increasePct < bidAmountIncreaseMin) increasePct = bidAmountIncreaseMin;
 		double bidAmount = currentBid + (currentBid * increasePct);
+
+		// Make sure bid is not in fractional cents
+		bidAmount = Math.round(bidAmount * 100.0) / 100.0;
+		if (bidAmount <= currentBid) {
+			/*
+			 *  Make sure rounding didn't make bid lower than current,
+			 *  which can happen for really low current
+			 */
+			bidAmount = currentBid + 0.01;
+		}
 		if (bidAmount > myCreditLimit) {
 			bidAmount = myCreditLimit;
 		}
 		if (bidAmount > maxBid) {
 			bidAmount = maxBid;
 		}
-		
-		// Make sure bid is not in fractional cents
-		bidAmount = Math.round(bidAmount);
-		
+				
 		return bidAmount;
 	}
 
